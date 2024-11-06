@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function fetchProducts(query) {
         try {
             const response = await axios.get(`/.netlify/functions/shopifyProducts`, {
-                params: { title: query }
+                params: { title: query } // Pass the search term as a query parameter
             });
             displayProducts(response.data.products);
         } catch (error) {
@@ -28,6 +28,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Display products in the table
     function displayProducts(products) {
         productTableBody.innerHTML = ""; // Clear existing results
+
+        if (products.length === 0) {
+            productTableBody.innerHTML = `<tr><td colspan="3" class="text-warning">No products found</td></tr>`;
+            return;
+        }
 
         products.forEach(product => {
             const title = product.title;

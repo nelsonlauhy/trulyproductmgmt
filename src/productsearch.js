@@ -1,14 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
     const searchInput = document.getElementById("searchInput");
+    const searchButton = document.getElementById("searchButton");
     const productTableBody = document.getElementById("productTableBody");
 
-    // Event listener for search input
-    searchInput.addEventListener("input", () => {
+    // Event listener for search button click
+    searchButton.addEventListener("click", () => {
         const query = searchInput.value.trim();
         if (query) {
             fetchProducts(query);
         } else {
             productTableBody.innerHTML = ""; // Clear table if search is empty
+            productTableBody.innerHTML = `<tr><td colspan="3" class="text-warning">Please enter a search term.</td></tr>`;
         }
     });
 

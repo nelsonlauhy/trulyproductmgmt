@@ -13,6 +13,8 @@ exports.handler = async function(event, context) {
     if (query) {
         url += `?title=${encodeURIComponent(query)}`;
     }
+    
+    console.log("Request URL:", url); // Log the URL for debugging
 
     try {
         const response = await axios.get(url, {
@@ -21,6 +23,8 @@ exports.handler = async function(event, context) {
                 password: apiPassword
             }
         });
+
+        console.log("Response Data:", response.data); // Log response data for debugging
 
         return {
             statusCode: 200,

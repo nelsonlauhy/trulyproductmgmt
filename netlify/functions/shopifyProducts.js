@@ -5,13 +5,15 @@ exports.handler = async function(event, context) {
     const apiKey = process.env.SHOPIFY_API_KEY;
     const apiPassword = process.env.SHOPIFY_API_PASSWORD;
 
+    // Capture the search term and pagination parameters
     const query = event.queryStringParameters.title;
+    const page = event.queryStringParameters.page || 1; // Default to page 1
+    const limit = event.queryStringParameters.limit || 50; // Default to 50 items per page
 
-    // Shopify API URL
-    const url = `https://${shopName}.myshopify.com/admin/api/2023-07/products.json?limit=50`;
+    // Shopify API URL with pagination parameters
+    const url = `https://${shopName}.myshopify.com/admin/api/2023-07/products.json?limit=${limit}&page=${page}`;
 
-    // Recursive function to fetch all pages
-    async function fetchAllProducts(url, products = []) {
+    try {
         const response = await axios.get(url, {
             auth: {
                 username: apiKey,
@@ -19,26 +21,7 @@ exports.handler = async function(event, context) {
             }
         });
 
-        // Combine current page products with accumulated products
-        products = products.concat(response.data.products);
-
-        // Check for pagination and continue fetching if more pages exist
-        const nextLink = response.headers.link && response.headers.link.includes('rel="next"')
-            ? response.headers.link.match(/<(.*?)>; rel="next"/)[1]
-            : null;
-
-        if (nextLink) {
-            // Recursive call to fetch the next page
-            return fetchAllProducts(nextLink, products);
-        } else {
-            // No more pages, return the accumulated products
-            return products;
-        }
-    }
-
-    try {
-        // Fetch all products across pages
-        let products = await fetchAllProducts(url);
+        let products = response.data.products;
 
         // Filter products by title if query is provided
         if (query) {

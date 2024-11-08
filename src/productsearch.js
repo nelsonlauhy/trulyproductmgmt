@@ -14,12 +14,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Fetch products from the Netlify function
-    async function fetchProducts(query) {
-        console.log("Query:", query); // Log the search term
+    let currentPage = 1;
+    const limit = 50;
+    
+    async function fetchProducts(query, page = 1) {
         try {
             const response = await axios.get(`/.netlify/functions/shopifyProducts`, {
-                params: { title: query } // Pass the search term as a query parameter
+                params: { title: query, page, limit }
             });
             displayProducts(response.data.products);
         } catch (error) {
@@ -27,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
             productTableBody.innerHTML = `<tr><td colspan="3" class="text-danger">Error fetching products</td></tr>`;
         }
     }
-    
 
     // Display products in the table
     function displayProducts(products) {

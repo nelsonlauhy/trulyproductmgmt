@@ -6,22 +6,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // Event listener for search button click
     searchButton.addEventListener("click", () => {
         const query = searchInput.value.trim();
-        if (query) {
-            fetchProducts(query);
-        } else {
-            productTableBody.innerHTML = ""; // Clear table if search is empty
-            productTableBody.innerHTML = `<tr><td colspan="3" class="text-warning">Please enter a search term.</td></tr>`;
-        }
+        fetchProducts(query);
     });
 
-    let currentPage = 1;
-    const limit = 50;
-    
-    async function fetchProducts(query, page = 1) {
+    // Fetch products from the Netlify function
+    async function fetchProducts(query) {
+        console.log("Query:", query); // Debugging log
         try {
-            const response = await axios.get(`/.netlify/functions/shopifyProducts`, {
-                params: { title: query, page, limit }
-            });
+            const response = await axios.get(`/.netlify/functions/shopifyProducts`);
             displayProducts(response.data.products);
         } catch (error) {
             console.error("Error fetching products:", error);

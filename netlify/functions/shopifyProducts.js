@@ -5,17 +5,11 @@ exports.handler = async function(event, context) {
     const apiKey = process.env.SHOPIFY_API_KEY;
     const apiPassword = process.env.SHOPIFY_API_PASSWORD;
 
-    // Log incoming parameters for debugging
-    const query = event.queryStringParameters.title;
-    const page = event.queryStringParameters.page || 1;
-    const limit = event.queryStringParameters.limit || 50;
-    console.log("Received query parameters:", { query, page, limit });
-
-    // Construct the Shopify API URL
-    let url = `https://${shopName}.myshopify.com/admin/api/2023-07/products.json?limit=${limit}&page=${page}`;
-    console.log("Constructed URL:", url);
+    // Simple URL to fetch the first 50 products
+    const url = `https://${shopName}.myshopify.com/admin/api/2023-07/products.json?limit=50`;
 
     try {
+        console.log("Requesting products from Shopify:", url); // Debugging log
         const response = await axios.get(url, {
             auth: {
                 username: apiKey,
@@ -23,23 +17,13 @@ exports.handler = async function(event, context) {
             }
         });
 
-        let products = response.data.products;
-        console.log("Fetched products count:", products.length);
-
-        // Filter products if a search query is provided
-        if (query) {
-            products = products.filter(product =>
-                product.title.toLowerCase().includes(query.toLowerCase())
-            );
-            console.log("Filtered products count:", products.length);
-        }
+        console.log("Fetched products count:", response.data.products.length); // Debugging log
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ products })
+            body: JSON.stringify({ products: response.data.products })
         };
     } catch (error) {
-        // Log the error details for debugging
         console.error("Error fetching products:", error.message);
         return {
             statusCode: 500,

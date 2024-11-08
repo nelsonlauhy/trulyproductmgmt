@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
             productTableBody.innerHTML = `<tr><td colspan="3" class="text-danger">Error fetching products</td></tr>`;
         }
     }
+    
 
     // Display products in the table
     function displayProducts(products) {

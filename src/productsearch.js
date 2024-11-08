@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Fetch products from the Netlify function
     async function fetchProducts(query) {
+        console.log("Query:", query); // Log the search term
         try {
             const response = await axios.get(`/.netlify/functions/shopifyProducts`, {
                 params: { title: query } // Pass the search term as a query parameter

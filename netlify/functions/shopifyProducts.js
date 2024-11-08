@@ -5,16 +5,10 @@ exports.handler = async function(event, context) {
     const apiKey = process.env.SHOPIFY_API_KEY;
     const apiPassword = process.env.SHOPIFY_API_PASSWORD;
     
-    // Capture the search term from the query parameters
     const query = event.queryStringParameters.title;
-    
-    // Construct the URL, adding the title filter if a query is provided
-    let url = `https://${shopName}.myshopify.com/admin/api/2023-07/products.json`;
-    if (query) {
-        url += `?title=${encodeURIComponent(query)}`;
-    }
-    
-    console.log("Request URL:", url); // Log the URL for debugging
+    console.log("Received query:", query); // Debugging
+
+    const url = `https://${shopName}.myshopify.com/admin/api/2023-07/products.json`;
 
     try {
         const response = await axios.get(url, {
@@ -24,11 +18,16 @@ exports.handler = async function(event, context) {
             }
         });
 
-        console.log("Response Data:", response.data); // Log response data for debugging
+        let products = response.data.products;
+        if (query) {
+            products = products.filter(product => 
+                product.title.toLowerCase().includes(query.toLowerCase())
+            );
+        }
 
         return {
             statusCode: 200,
-            body: JSON.stringify(response.data)
+            body: JSON.stringify({ products })
         };
     } catch (error) {
         console.error("Error fetching products:", error);
